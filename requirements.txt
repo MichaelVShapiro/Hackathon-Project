@@ -9,3 +9,4 @@ pymupdf
 hf_xet
 mlx
 mlx-lm
+django
