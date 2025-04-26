@@ -4,6 +4,20 @@ from django.template import loader
 from django.urls import reverse
 from urllib.parse import urlencode
 from .forms import *
+from chatbot.rag_query import *
+
+bot: RAGQueryMLX = RAGQueryMLX() # for cache
+
+def getChatBotResponse(i: str):
+    """
+    Gets the response from the chat bot given an input
+    Args:
+        i: Required. A string representing the input
+    
+    Returns:
+        Chatbot response
+    """
+    return bot.query(i)[0]
 
 # Create your views here.
 
@@ -14,6 +28,12 @@ def chatView(request):
             'page': 'chat page'
         }
         return HttpResponse(loader.get_template('nlogged_in.html').render(context, request))
+    if request.method == 'POST':
+        cleaned = ChatForm(request.POST)
+        if not cleaned.is_valid():
+            return HttpResponseForbidden()
+        
+        return HttpResponse(getChatBotResponse(cleaned.cleaned_data['chat_text']))
     template = loader.get_template('chat.html')
     context = {
         'user_id': request.session['user_id'],

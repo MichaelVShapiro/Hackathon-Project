@@ -19,13 +19,24 @@
             <label>What are you Feeling?</label>
             <textarea id="f3"></textarea>
             <br>
-            <button>Submit</button>
+            <button id="chat">Submit</button>
         </div>
         <div id="post_ques">
             <div id="written"></div>
             <hr>
             <div id="response"></div>
-            <textarea placeholder="Talk more"></textarea>
+            <textarea id="chat_textarea" placeholder="Talk more"></textarea>
         </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script>
+            document.getElementById("chat").addEventListener('click', (e) => {
+                e.preventDefault();
+                $.post('chat/', {
+                    chat_text: document.getElementById("chat_textarea").value
+                }, (data, status) => {
+                    console.log(data);
+                });
+            });
+        </script>
     </body>
 </html>

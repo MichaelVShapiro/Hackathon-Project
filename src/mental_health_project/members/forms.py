@@ -10,3 +10,9 @@ class LogInForm(forms.Form):
     username = forms.CharField()
     password = forms.PasswordInput()
     remember_me = forms.BooleanField(required=False)
+
+class ChatForm(forms.Form):
+    """
+    For handling chat info
+    """
+    chat_text = forms.CharField()
