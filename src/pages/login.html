@@ -63,18 +63,6 @@
     .button:hover {
       background-color: #2563eb;
     }
-    .button-outline {
-      background: transparent;
-      border: 1px solid #d1d5db;
-      padding: 0.75rem;
-      border-radius: 0.375rem;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    .button-outline:hover {
-      background-color: #f9fafb;
-    }
     .footer-text {
       text-align: center;
       font-size: 0.875rem;
@@ -110,7 +98,6 @@
         <input id="password" type="password" placeholder="Password" required>
       </div>
       <button type="submit" class="button">Login</button>
-      <button type="button" id="googleLogin" class="button-outline">Login with Google</button>
     </form>
 
     <div id="message"></div>
@@ -121,25 +108,21 @@
   </div>
 
   <script type="module">
-    // Import Firebase modules
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-    // Your web app's Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyD4jIfiKrv-gIbcKy8LqZSW5xq1q_DQjoU",
       authDomain: "uwbhacks-2a43c.firebaseapp.com",
       projectId: "uwbhacks-2a43c",
-      storageBucket: "uwbhacks-2a43c.firebasestorage.app",
+      storageBucket: "uwbhacks-2a43c",
       messagingSenderId: "651027926862",
       appId: "1:651027926862:web:2ead8defddad8b49b0181f"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // Handle login form submit
     const loginForm = document.getElementById('loginForm');
     const messageDiv = document.getElementById('message');
 
@@ -153,28 +136,6 @@
         const user = userCredential.user;
         messageDiv.textContent = `Logged in as ${user.email}`;
         messageDiv.style.color = "green";
-        // Redirect after login
-        setTimeout(() => {
-          window.location.href = "dashboard.html";
-        }, 1500);
-      } catch (error) {
-        console.error(error);
-        messageDiv.textContent = error.message;
-        messageDiv.style.color = "red";
-      }
-    });
-
-    // Handle Google login button click
-    const googleLoginButton = document.getElementById('googleLogin');
-
-    googleLoginButton.addEventListener('click', async () => {
-      const provider = new GoogleAuthProvider();
-      try {
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-        messageDiv.textContent = `Logged in as ${user.email} with Google`;
-        messageDiv.style.color = "green";
-        // Redirect after Google login
         setTimeout(() => {
           window.location.href = "dashboard.html";
         }, 1500);
