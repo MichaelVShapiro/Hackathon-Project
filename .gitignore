@@ -1,0 +1,7 @@
+/**/.DS_Store
+/**/.*.swp
+/**/.idea/
+/**/__pycache__/**
+/**/*.pyc
+/**/*.log
+/src/hackathon_project/**
