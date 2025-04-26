@@ -3,8 +3,11 @@ from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirec
 from django.template import loader
 from django.urls import reverse
 from urllib.parse import urlencode
+
+from django.views.decorators.csrf import csrf_exempt
+
 from .forms import *
-from chatbot.rag_query import *
+from .chatbot.rag_query import *
 
 bot: RAGQueryMLX = RAGQueryMLX() # for cache
 
@@ -21,13 +24,14 @@ def getChatBotResponse(i: str):
 
 # Create your views here.
 
+@csrf_exempt
 def chatView(request):
     # make sure the user is logged in
-    if not request.session['is_loggedin']:
-        context = {
-            'page': 'chat page'
-        }
-        return HttpResponse(loader.get_template('nlogged_in.html').render(context, request))
+    # if not request.session['is_loggedin']:
+    #     context = {
+    #         'page': 'chat page'
+    #     }
+    #     return HttpResponse(loader.get_template('nlogged_in.html').render(context, request))
     if request.method == 'POST':
         cleaned = ChatForm(request.POST)
         if not cleaned.is_valid():
@@ -36,8 +40,8 @@ def chatView(request):
         return HttpResponse(getChatBotResponse(cleaned.cleaned_data['chat_text']))
     template = loader.get_template('chat.html')
     context = {
-        'user_id': request.session['user_id'],
-        'username': request.session['username'],
+        'user_id': request.session.get('user_id', -1),
+        'username': request.session.get('username', 'anonymous'),
     }
     return HttpResponse(template.render(context, request))
 

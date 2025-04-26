@@ -31,7 +31,7 @@
         <script>
             document.getElementById("chat").addEventListener('click', (e) => {
                 e.preventDefault();
-                $.post('chat/', {
+                $.post('/chat/', {
                     chat_text: document.getElementById("chat_textarea").value
                 }, (data, status) => {
                     console.log(data);

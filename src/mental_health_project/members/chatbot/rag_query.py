@@ -1,4 +1,4 @@
-import vector_db
+from .vector_db import *
 import numpy as np
 from sentence_transformers import SentenceTransformer
 from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -16,7 +16,8 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 class RAGQuery:
     def __init__(self, k_retrieval=3):
         self.k = k_retrieval
-        self.index, self.metadata = vector_db.load_db()
+        # self.index, self.metadata = vector_db.load_db()
+        self.index, self.metadata = load_db()
         print("Vector db loaded")
         self.embedder = SentenceTransformer('all-MiniLM-L6-v2')
         self.model, self.tokenizer = self._load_llm()
@@ -71,7 +72,8 @@ class RAGQuery:
 class RAGQueryMLX:
     def __init__(self, k_retrieval=3, model_path="mlx-community/Mistral-7B-Instruct-v0.3"):
         self.k = k_retrieval
-        self.index, self.metadata = vector_db.load_db()
+        # self.index, self.metadata = vector_db.load_db()
+        self.index, self.metadata = load_db()
         print("Vector db loaded")
         self.embedder = SentenceTransformer('all-MiniLM-L6-v2')
         self.model, self.tokenizer = self._load_llm(model_path)
