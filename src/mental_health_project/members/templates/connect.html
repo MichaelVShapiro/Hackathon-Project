@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Connect With Therapists</title>
+        <link rel="stylesheet" href="assets/main.css">
+    </head>
+    <body>
+        <h1>Connect with Therapists</h1>
+        <p>Hi {{ username }}! Looking for therapists? Below are a list of therapists in your local area, and ones reccomended for you!</p>
+        <h2>Therapists in Your Local Area</h2>
+        <div>
+            <label>Therapists in Radius:</label>
+            <input type="range" min="1" max="100" id="radius">
+            <span id="radius_output">1</span>
+            <button>Find Within Given Range</button>
+        </div>
+        <ul id="local_therapists"></ul>
+        <div id="show_therapist" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close">&times;</span>
+                    <h2 id="therapist_name"></h2>
+                </div>
+                <div id="about_therapist" class="modal-body"></div>
+                <div class="modal-footer">
+                    <button>Connect with Therapist</button>
+                </div>
+            </div>
+        </div>
+        <script src="assets/modal.js"></script>
+        <script>
+            document.getElementById("radius").addEventListener("change", (e) => {
+                e.preventDefault();
+                document.getElementById("radius_output").innerHTML = document.getElementById("radius").value;
+            });
+        </script>
+    </body>
+</html>
