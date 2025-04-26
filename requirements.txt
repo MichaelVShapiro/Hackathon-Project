@@ -6,3 +6,4 @@ torch
 accelerate
 bitsandbytes
 pymupdf
+hf_xet
