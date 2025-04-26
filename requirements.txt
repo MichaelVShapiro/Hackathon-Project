@@ -1,0 +1,8 @@
+numpy
+faiss-cpu
+sentence-transformers
+transformers
+torch
+accelerate
+bitsandbytes
+pymupdf
