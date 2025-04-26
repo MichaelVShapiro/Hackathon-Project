@@ -1,0 +1,12 @@
+numpy
+faiss-cpu
+sentence-transformers
+transformers
+torch
+accelerate
+bitsandbytes
+pymupdf
+hf_xet
+mlx
+mlx-lm
+django
