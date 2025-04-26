@@ -3,14 +3,15 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
+from mlx_lm import load, generate
 
 DB_DIR = "./db/"
-MODEL_NAME = "HuggingFaceH4/zephyr-7b-alpha"
-# MODEL_NAME = "HuggingFaceH4/zephyr-7b-beta"
+# MODEL_NAME = "HuggingFaceH4/zephyr-7b-alpha"
+MODEL_NAME = "HuggingFaceH4/zephyr-7b-beta"
 # MODEL_NAME = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+ZEPHYR_ASSISTANT = "<|assistant|>"
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-ZEPHYR_ASSISTANT = "<|assistant|>"
 
 class RAGQuery:
     def __init__(self, k_retrieval=3):
@@ -61,16 +62,63 @@ class RAGQuery:
         D, I = self.index.search(np.array(query_embedding), self.k)
         retrieved_meta = [self.metadata[i] for i in I[0]]
 
-        # prompt = "Use the following documents to answer the question accurately:\n\n"
-        # Build prompt in zephyr format
         prompt = self._build_zephyr_prompt(retrieved_meta, user_query)
         response = self._generate_response(prompt)
 
         return response, retrieved_meta
 
 
+class RAGQueryMLX:
+    def __init__(self, k_retrieval=3, model_path="mlx-community/Mistral-7B-Instruct-v0.3"):
+        self.k = k_retrieval
+        self.index, self.metadata = vector_db.load_db()
+        print("Vector db loaded")
+        self.embedder = SentenceTransformer('all-MiniLM-L6-v2')
+        self.model, self.tokenizer = self._load_llm(model_path)
+        print("LLM loaded")
+
+    def _load_llm(self, model_path):
+        return load(model_path)
+
+    def _build_simple_prompt(self, retrieved_meta, user_query):
+        prompt = "You are a helpful assistant. Use the provided documents to answer the user's question accurately and concisely.\n\n"
+        prompt += "Documents:\n"
+
+        for idx, meta in enumerate(retrieved_meta, 1):
+            prompt += f"- Document {idx} from {meta['source']}: {meta['chunk_text']}\n"
+
+        prompt += f"\nQuestion: {user_query}\nAnswer:"
+        return prompt
+
+    def _build_mistral_prompt(self, retrieved_meta, user_query):
+        prompt = "<s>[INST] "
+        prompt += "Use the following documents to answer the user's question accurately and concisely.\n\n"
+        prompt += "Documents:\n"
+
+        for idx, meta in enumerate(retrieved_meta, 1):
+            prompt += f"- Document {idx} from {meta['source']}: {meta['chunk_text']}\n"
+
+        prompt += f"\nQuestion: {user_query}\n"
+        prompt += "[/INST]"
+        return prompt
+
+    def _generate_response(self, prompt):
+        return generate(self.model, self.tokenizer, prompt, verbose=False)
+
+    def query(self, user_query):
+        query_embedding = self.embedder.encode([user_query])
+        D, I = self.index.search(np.array(query_embedding), self.k)
+        retrieved_meta = [self.metadata[i] for i in I[0]]
+
+        prompt = self._build_mistral_prompt(retrieved_meta, user_query)
+        response = self._generate_response(prompt)
+
+        return response, retrieved_meta
+
+
 def _prompt_test():
-    rag = RAGQuery()
+    # rag = RAGQuery()
+    rag = RAGQueryMLX()
 
     while True:
         user_input = input("\nQuestion (type 'exit' to quit): ")
@@ -79,9 +127,9 @@ def _prompt_test():
 
         answer, sources = rag.query(user_input)
 
-#        print("\n--- Query related metadata ---")
-#        for meta in sources:
-#            print(f"{meta['source']}: {meta['chunk_text'][:100]}...")
+        print("\n--- Query related metadata ---")
+        for meta in sources:
+           print(f"{meta['source']}: {meta['chunk_text'][:100]}...")
 
         print("\n--- Generated answer ---")
         print(answer)
