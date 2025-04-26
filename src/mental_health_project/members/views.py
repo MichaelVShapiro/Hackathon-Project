@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirec
 from django.template import loader
 from django.urls import reverse
 from urllib.parse import urlencode
-from forms import *
+from .forms import *
 
 # Create your views here.
 
