@@ -16,3 +16,10 @@ class ChatForm(forms.Form):
     For handling chat info
     """
     chat_text = forms.CharField()
+
+class UserLogInInfo(forms.Form):
+    """
+    For handling logging in and out functions
+    """
+    username = forms.CharField()
+    is_logging_in = forms.BooleanField()

@@ -103,7 +103,7 @@
     <div id="message"></div>
 
     <div class="footer-text">
-      Don't have an account? <a href="signup.html">Sign up</a>
+      Don't have an account? <a href="/signup/">Sign up</a>
     </div>
   </div>
 
@@ -137,7 +137,7 @@
         messageDiv.textContent = `Logged in as ${user.email}`;
         messageDiv.style.color = "green";
         setTimeout(() => {
-          window.location.href = "dashboard.html";
+          window.location.href = "/dashboard/";
         }, 1500);
       } catch (error) {
         console.error(error);

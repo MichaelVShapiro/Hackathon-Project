@@ -6,5 +6,6 @@ urlpatterns = [
     path('login/', views.loginView, name='loginView'),
     path('process/', views.processLoginView, name='processView'),
     path('connect/', views.connectView, name='connectView'),
-    path('signup/', views.signUpView, name='signUpView')
+    path('signup/', views.signUpView, name='signUpView'),
+    path('process_login/', views.processLogIn, name='processLogIn')
 ]

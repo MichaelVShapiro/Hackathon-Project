@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Dashboard -- {{ username }}</title>
+    </head>
+    <body>
+        <h1>Hello {{ username }}!!</h1>
+        <p>Here are some links and actions below to get you started.</p>
+        <ul>
+            <li><a href="chat/">Chat with AI Bot</a></li>
+            <li><a href="connect/">Connect with a Therapist</a></li>
+        </ul>
+        <button id="logout">Log Out</button>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script>
+            document.getElementById("logout").addEventListener('click', (e) => {
+                e.preventDefault();
+                $.post('process_login/', {
+                    username: '',
+                    is_logging_in: false
+                }, (data, status) => {
+                    alert('you have been logged out');
+                    window.location.href = 'login/';
+                })
+            })
+        </script>
+    </body>
+</html>

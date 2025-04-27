@@ -3,11 +3,8 @@ from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirec
 from django.template import loader
 from django.urls import reverse
 from urllib.parse import urlencode
-
-from django.views.decorators.csrf import csrf_exempt
-
 from .forms import *
-from .chatbot.rag_query import *
+from chatbot.rag_query import *
 
 bot: RAGQueryMLX = RAGQueryMLX() # for cache
 
@@ -24,14 +21,13 @@ def getChatBotResponse(i: str):
 
 # Create your views here.
 
-@csrf_exempt
 def chatView(request):
     # make sure the user is logged in
-    # if not request.session['is_loggedin']:
-    #     context = {
-    #         'page': 'chat page'
-    #     }
-    #     return HttpResponse(loader.get_template('nlogged_in.html').render(context, request))
+    if not request.session.get('is_loggedin', False):
+        context = {
+            'page': 'chat page'
+        }
+        return HttpResponse(loader.get_template('nlogged_in.html').render(context, request))
     if request.method == 'POST':
         cleaned = ChatForm(request.POST)
         if not cleaned.is_valid():
@@ -40,14 +36,13 @@ def chatView(request):
         return HttpResponse(getChatBotResponse(cleaned.cleaned_data['chat_text']))
     template = loader.get_template('chat.html')
     context = {
-        'user_id': request.session.get('user_id', -1),
-        'username': request.session.get('username', 'anonymous'),
+        'username': request.session['username']
     }
     return HttpResponse(template.render(context, request))
 
 def loginView(request):
     # if user is logged in, deny it!
-    if not request.session['is_loggedin']:
+    if request.session.get('is_loggedin', False):
         context = {
             'page': 'log in page'
         }
@@ -84,7 +79,7 @@ def processLoginView(request):
 
 def connectView(request):
     # must be logged in
-    if not request.session['is_loggedin']:
+    if not request.session.get('is_loggedin', False):
         context = {
             'page': 'log in page'
         }
@@ -97,10 +92,31 @@ def connectView(request):
 
 def signUpView(request):
     # users logged in shouldn't make another account!
-    if request.session['is_loggedin']:
+    if request.session.get('is_loggedin', False):
         context = {
             'page': 'already logged in!'
         }
         return HttpResponse(loader.get_template('nlogged_in.html').render(context, request))
     
     return HttpResponse(loader.get_template('signup.html').render())
+
+def processLogIn(request):
+    # if logged in, skip
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+    
+    # process login data
+    login_data = UserLogInInfo(request.POST)
+    if login_data.is_valid():
+        if login_data.cleaned_data['is_logging_in']:
+            # set session variables
+            request.session['is_loggedin'] = True
+            request.session['username'] = login_data.cleaned_data['username']
+            context = {
+                'username': login_data.cleaned_data['username']
+            }
+            return HttpResponse(loader.get_template('dashboard.html').render(context, request))
+        else:
+            request.session.clear()
+            return HttpResponse(loader.get_template('login.html').render())
+    return HttpResponseForbidden()
