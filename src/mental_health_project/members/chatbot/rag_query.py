@@ -108,10 +108,12 @@ class RAGQueryMLX:
         return generate(self.model, self.tokenizer, prompt, verbose=False)
 
     def query(self, user_query):
+        print("querying the vector db...")
         query_embedding = self.embedder.encode([user_query])
         D, I = self.index.search(np.array(query_embedding), self.k)
         retrieved_meta = [self.metadata[i] for i in I[0]]
 
+        print("generating llm response...")
         prompt = self._build_mistral_prompt(retrieved_meta, user_query)
         response = self._generate_response(prompt)
 

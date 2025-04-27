@@ -25,7 +25,7 @@
             document.getElementById("chat").addEventListener('click', (e) => {
                 e.preventDefault();
                 document.getElementById("loading").style.display = "block";
-                $.post('chat/', {
+                $.post('/chat/', {
                     chat_text: document.getElementById("chat_textarea").value
                 }, (data, status) => {
                     // convert any '<' to '\<' so that data is cleaned
